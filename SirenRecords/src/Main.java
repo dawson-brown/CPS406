@@ -4,7 +4,6 @@ public class Main {
     /*
      *
      * This is a temporary Command line tool used to interact with the system until there is a GUI
-     * At the moment, this tool doesn't make use of the Account class api--only Playlist and Song
      * See below for usage
      *
      */
@@ -37,7 +36,7 @@ public class Main {
 
 
     /*
-    * A simple command line tool for adding, deleting, and printing songs in a playlist
+    * A simple command line tool for creating an account and adding, deleting, and printing songs in a playlist
     *
     * Usage: type -?  to see usage
     */
