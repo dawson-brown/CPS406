@@ -16,7 +16,7 @@ public class Playlist {
 
     @Override
     public String toString(){
-        StringBuilder string = new StringBuilder("Playlist:\n");
+        StringBuilder string = new StringBuilder("");
         for(int i=0; i<this.playlist.size(); i++){
             string.append(this.playlist.get(i).toString());
             string.append("\n");
