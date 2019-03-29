@@ -1,0 +1,8 @@
+# ignore compiled source #
+*.class
+out/
+
+# ignore intellij #
+.idea/
+SirenRecords/SirenRecords.iml
+
