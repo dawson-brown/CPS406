@@ -4,29 +4,30 @@ public class Main {
     /*
      *
      * This is a temporary Command line tool used to interact with the system until there is a GUI
+     * At the moment, this tool doesn't make use of the Account class api--only Playlist and Song
      * See below for usage
      *
      */
 
-    enum actions{
-        SIGNUP,
-        LOGIN,
-        PLAYLIST,
-        MOD,
-    }
-
-    public static String[] simpleParse(actions command, String input){
+    public static String[] simpleParse(String command, String input){
         String[] parsed;
 
         parsed = input.split("\\|");
 
-        if ((command.equals("-a") || command.equals("-d")) && parsed.length != 4) {
+        if (parsed.length != 4) {
             System.out.println("Invalid number of arguments:" + parsed.length);
             return null;
-        } else if ((command == actions.LOGIN || command == actions.SIGNUP) && parsed.length != 2){
-            System.out.println("Invalid number of arguments:" + parsed.length);
-            return null;
-        } else if (command == actions.PLAYLIST && parsed.length != 1){
+        }
+
+        return parsed;
+    }
+    
+    public static String[] simpleParsePlaylist(String command, String input){
+        String[] parsed;
+
+        parsed = input.split("\\|");
+
+        if (parsed.length != 1) {
             System.out.println("Invalid number of arguments:" + parsed.length);
             return null;
         }
@@ -36,152 +37,81 @@ public class Main {
 
 
     /*
-    * A simple command line tool for creating an account and adding, deleting, and printing songs in a playlist
+    * A simple command line tool for adding, deleting, and printing songs in a playlist
     *
     * Usage: type -?  to see usage
     */
-    public static void main(String[] _args) {
+    public static void main(String[] args) {
 
         Song song;
         Scanner scan = new Scanner(System.in);
-        String input;
-        String[] args;
+        Playlist list = new Playlist();
+        String input_string;
+        String[] input;
         String command;
 
-        //login state
-        SirenRecords state = new SirenRecords();
+        while(true){
 
-        while(true) {
+            input_string = scan.nextLine();
+            command = input_string.substring(0,2>input_string.length() ? input_string.length() : 2);
 
-            input = scan.nextLine();
-            command = input.substring(0, 2 > input.length() ? input.length() : 2);
+            if (command.equals("-a") | command.equals("-d")) {
+                input = simpleParse(command, input_string.substring(3));
 
-            if (input.startsWith("--signup")){
-
-                if (state.signedIn()){
-                    System.out.println("Already signed in.");
-                } else {
-                    args = input.length() > 9 ? simpleParse(actions.SIGNUP, input.substring(9)) : null;
-                    if (args != null) {
-                        if (!state.signup(args[0], args[1])) {
-                            System.out.println("Signup error. Try again.");
-                        } else {
-                            System.out.println("Signup successful.");
-                        }
-                    }
-                }
-
-            } else if (input.startsWith("--login")) {
-
-                if (state.signedIn()){
-                    System.out.println("Already signed in.");
-                } else {
-                    args = input.length() > 8 ? simpleParse(actions.LOGIN, input.substring(8)) : null;
-                    if (args != null) {
-                        if (!state.login(args[0], args[1])) {
-                            System.out.println("Login error. Try again.");
-                        } else {
-                            System.out.println("Logged in.");
-                        }
-                    }
-                }
-
-            } else if (input.startsWith("--logout")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    state.logout();
-                }
-
-            } else if (input.startsWith("--playlist")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    args = input.length() > 11 ? simpleParse(actions.PLAYLIST, input.substring(11)) : null;
-                    if (args != null){
-                        if(!state.selectPlayList(args[0])) {
-                            System.out.println("Playlist not found.");
-                        }
-                    }
-                }
-
-            } else if (input.startsWith("--new")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    args = input.length() > 6 ? simpleParse(actions.PLAYLIST, input.substring(6)) : null;
-                    if (args != null){
-                        state.addPlaylist(args[0]);
-                        System.out.println("Playlist added.");
-                    }
-                }
-
-            } else if (input.startsWith("--add")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    args = input.length() > 6 ? simpleParse(actions.MOD, input.substring(6)) : null;
-
-                    if (args != null) {
-                        if(!state.addToPlayList(new Song(args[0], args[1], Integer.parseInt(args[2]), Double.parseDouble(args[3])))) {
-                            System.out.println("Playlist not selected");
-                        } else {
-                            System.out.println("Song added.");
-                        }
-                    }
-                }
-
-            } else if (input.startsWith("--delete")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    args = input.length() > 9 ? simpleParse(actions.MOD,input.substring(9)) : null;
-
-                    if (args != null){
-                        state.removeFromPlayList(new Song(args[0], args[1], Integer.parseInt(args[2]), Double.parseDouble(args[3])));
+                if (input != null) {
+                    song = new Song(input[0], input[1], Integer.parseInt(input[2]), Long.parseLong(input[3]));
+                    if (command.equals("-a")){
+                        list.add(song);
+                        System.out.println("Song added");
+                    } else {
+                        list.delete(song);
                         System.out.println("Song deleted");
                     }
                 }
+                
 
-            } else if (input.startsWith("--print")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    System.out.println(state.printPlayList());
-                }
-
-            } else if (input.startsWith("--show")) {
-
-                if (!state.signedIn()){
-                    System.out.println("Not signed in.");
-                } else {
-                    System.out.println(state.printPlayLists());
-                }
-
-            } else if (input.startsWith("--quit")) {
-
-                break;
-            } else if (input.startsWith("--help")) {
-                System.out.println( "--signup username|password ---------signup with given credentials\n"+
-                                    "--login username|password ----------login with given credentials\n"+
-                                    "--logout ---------------------------logout\n"+
-                                    "--playlist name --------------------select the playlist with the given name\n"+
-                                    "--new name -------------------------add a playlist with the given name\n"+
-                                    "--add name|artist|year|length ------add a song to the currently selected playlist\n"+
-                                    "--delete name|artist|year|length ---delete a song from the currently selected playlist\n"+
-                                    "--print ----------------------------print the currently selected playlist\n"+
-                                    "--show -----------------------------print all the playlists for the current user\n"+
-                                    "--quit -----------------------------quit the shell\n"+
-                                    "--help -----------------------------show this help message");
-            }else {
-                System.out.println("Invalid command. See --help");
             }
+            else if(command.equals("-s")) {
+            	input= simpleParsePlaylist(command, input_string.substring(0));
+            	if(input != null) {
+            		if(input[0].equals("SortByYearOldtoNew")) {
+            			list.sortByYearOldtoNew();
+            		}
+            		else if(input[0].equals("MostRecent")) {
+            			list.sortByYearNewtoOld();
+            		}
+            		else if(input[0].equals("SortByYearArtist")) {
+            			list.sortByArtist();
+            		}
+            		else if(input[0].equals("SortAlphabetically")) {
+            			list.sortByName();
+            		}
+            		else if(input[0].equals("SortShortestToLongest")) {
+            			list.sortByLength();
+            		}
+            		else {
+            			System.out.println("Sorting playlist unssuccesful, please enter valid argument");
+            		}
+            	}
+            	
+            	
+            }
+            else if (command.equals("-p")) {
+                System.out.println(list.toString());
+            } else if (command.equals("-?")){
+                System.out.println("Usage:\n-p   --to print\n-q   --to quit\n" +
+                        "-a song name|artist name|year|length   --to add a song\n" +
+                        "-d song name|artist name|year|length   --to delete a song\n" + 
+                        "-s sort by		--to sort playlist" +
+                        "-?   --to this usage message."
+                );
+            } else if (command.equals("-q")) {
+                break;
+            } else {
+                System.out.println("Invalid arguments.");
+            }
+
+
         }
     }
 }
