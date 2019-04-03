@@ -13,6 +13,7 @@ public class Main {
         LOGIN,
         PLAYLIST,
         MOD,
+        SORT,
     }
 
     public static String[] simpleParse(actions command, String input){
@@ -29,6 +30,9 @@ public class Main {
         } else if (command == actions.PLAYLIST && parsed.length != 1){
             System.out.println("Invalid number of arguments:" + parsed.length);
             return null;
+        } else if (command == actions.SORT && parsed.length != 1){
+            System.out.println("Invalid number of arguments:" + parsed.length);
+            return null;
         }
 
         return parsed;
@@ -36,17 +40,16 @@ public class Main {
 
 
     /*
-    * A simple command line tool for creating an account and adding, deleting, and printing songs in a playlist
-    *
-    * Usage: type -?  to see usage
-    */
+     * A simple command line tool for creating an account and adding, deleting, and printing songs in a playlist
+     *
+     * Usage: type -?  to see usage
+     */
     public static void main(String[] _args) {
 
         Song song;
         Scanner scan = new Scanner(System.in);
         String input;
         String[] args;
-        String command;
 
         //login state
         SirenRecords state = new SirenRecords();
@@ -54,7 +57,6 @@ public class Main {
         while(true) {
 
             input = scan.nextLine();
-            command = input.substring(0, 2 > input.length() ? input.length() : 2);
 
             if (input.startsWith("--signup")){
 
@@ -127,7 +129,7 @@ public class Main {
                     args = input.length() > 6 ? simpleParse(actions.MOD, input.substring(6)) : null;
 
                     if (args != null) {
-                        if(!state.addToPlayList(new Song(args[0], args[1], Integer.parseInt(args[2]), Double.parseDouble(args[3])))) {
+                        if(!state.addToPlayList(new Song(args[0], args[1], Integer.parseInt(args[2]), Long.parseLong(args[3])))) {
                             System.out.println("Playlist not selected");
                         } else {
                             System.out.println("Song added.");
@@ -143,7 +145,7 @@ public class Main {
                     args = input.length() > 9 ? simpleParse(actions.MOD,input.substring(9)) : null;
 
                     if (args != null){
-                        state.removeFromPlayList(new Song(args[0], args[1], Integer.parseInt(args[2]), Double.parseDouble(args[3])));
+                        state.removeFromPlayList(new Song(args[0], args[1], Integer.parseInt(args[2]), Long.parseLong(args[3])));
                         System.out.println("Song deleted");
                     }
                 }
@@ -156,6 +158,23 @@ public class Main {
                     System.out.println(state.printPlayList());
                 }
 
+            } else if(input.startsWith("--sort")) {
+                args = input.length() > 7 ? simpleParse(actions.SORT, input.substring(7)) : null;
+                if(args != null) {
+                    if (args[0].equals("SortByYearOldtoNew")) {
+                        state.currentPlayList().sortByYearOldtoNew();
+                    } else if (args[0].equals("MostRecent")) {
+                        state.currentPlayList().sortByYearNewtoOld();
+                    } else if (args[0].equals("SortByYearArtist")) {
+                        state.currentPlayList().sortByArtist();
+                    } else if (args[0].equals("SortAlphabetically")) {
+                        state.currentPlayList().sortByName();
+                    } else if (args[0].equals("SortShortestToLongest")) {
+                        state.currentPlayList().sortByLength();
+                    } else {
+                        System.out.println("Sorting playlist unssuccesful, please enter valid argument");
+                    }
+                }
             } else if (input.startsWith("--show")) {
 
                 if (!state.signedIn()){
@@ -165,23 +184,31 @@ public class Main {
                 }
 
             } else if (input.startsWith("--quit")) {
-
+                if (state.signedIn()){
+                    state.logout();
+                }
                 break;
             } else if (input.startsWith("--help")) {
                 System.out.println( "--signup username|password ---------signup with given credentials\n"+
-                                    "--login username|password ----------login with given credentials\n"+
-                                    "--logout ---------------------------logout\n"+
-                                    "--playlist name --------------------select the playlist with the given name\n"+
-                                    "--new name -------------------------add a playlist with the given name\n"+
-                                    "--add name|artist|year|length ------add a song to the currently selected playlist\n"+
-                                    "--delete name|artist|year|length ---delete a song from the currently selected playlist\n"+
-                                    "--print ----------------------------print the currently selected playlist\n"+
-                                    "--show -----------------------------print all the playlists for the current user\n"+
-                                    "--quit -----------------------------quit the shell\n"+
-                                    "--help -----------------------------show this help message");
+                        "--login username|password ----------login with given credentials\n"+
+                        "--logout ---------------------------logout\n"+
+                        "--playlist name --------------------select the playlist with the given name\n"+
+                        "--new name -------------------------add a playlist with the given name\n"+
+                        "--add name|artist|year|length ------add a song to the currently selected playlist\n"+
+                        "--delete name|artist|year|length ---delete a song from the currently selected playlist\n"+
+                        "--print ----------------------------print the currently selected playlist\n"+
+                        "--sort criteria --------------------sort by the given criteria\n" +
+                        "--show -----------------------------print all the playlists for the current user\n"+
+                        "--quit -----------------------------quit the shell\n"+
+                        "--help -----------------------------show this help message");
             }else {
                 System.out.println("Invalid command. See --help");
             }
         }
     }
 }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            	

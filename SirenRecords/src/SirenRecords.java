@@ -66,12 +66,11 @@ public class SirenRecords {
             }
             String hash_password = hexString(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
 
-            oFile.close();
-
             try {
                 signed_in = true;
                 current_account = new Account(username);
                 oFile.append(username + ":" + hash_password + "\n");
+                oFile.close();
                 signed_in = true;
             } catch (IOException e){
                 return false;
@@ -207,4 +206,5 @@ public class SirenRecords {
         return "Playlists:\n" + current_account.printPlayLists();
     }
     public boolean selectPlayList(String playlist_name) { return current_account.selectPlayList(playlist_name); }
+    public Playlist currentPlayList() { return current_account.getCurrent_list(); }
 }
