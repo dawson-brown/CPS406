@@ -1,18 +1,34 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Account {
+public class Account implements java.io.Serializable {
 
     private String name;
     private HashMap<String, Playlist> playlists;
-    Playlist current_list;
+    transient private Playlist current_list;
+    private String serial_file;
 
-    public Account(String name){
+    public Account(String name) throws IOException {
         this.name = name;
         playlists = new HashMap<String, Playlist>();
         current_list = null;
+        serial_file = SirenRecords.account_folder + this.name;
+        File account_file = new File(serial_file);
+        try {
+            account_file.createNewFile();
+        } catch (Exception e){
+            System.out.println("Error.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
+
+    public String getSerial_file() { return serial_file; }
+
+    public Playlist getCurrent_list() { return current_list; }
 
     public String getName(){ return name; }
 
@@ -102,6 +118,8 @@ public class Account {
 
         return lists.toString();
     }
+
+
 
 }
 

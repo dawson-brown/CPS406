@@ -2,20 +2,31 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 public class SirenRecords {
 
     private Account current_account;
     private boolean signed_in;
     private File account_file;
+    public static String account_folder = "accounts/";
+    private static String account_file_string = "accounts";
 
     public SirenRecords(){
         current_account = null;
         signed_in = false;
-        account_file = new File("accounts");
+        File folder = new File(account_folder);
+        try {
+            folder.mkdirs();
+        } catch (Exception e){
+            System.out.println("Error.");
+            System.exit(-1);
+        }
+        account_file = new File(account_folder + account_file_string);
         try {
             account_file.createNewFile();
-        } catch (Exception e){
+        } catch (IOException e){
             System.out.println("Error.");
             System.exit(-1);
         }
@@ -55,12 +66,16 @@ public class SirenRecords {
             }
             String hash_password = hexString(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
 
-            oFile.append(username + ":" + hash_password + "\n");
-
             oFile.close();
 
-            signed_in = true;
-            current_account = new Account(username);
+            try {
+                signed_in = true;
+                current_account = new Account(username);
+                oFile.append(username + ":" + hash_password + "\n");
+                signed_in = true;
+            } catch (IOException e){
+                return false;
+            }
 
             return true;
         }
@@ -119,8 +134,19 @@ public class SirenRecords {
             String hash_password = hexString(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
             login =  hash_password.equals(entry[1]);
             if (login) {
-                current_account = new Account(username);
-                signed_in = true;
+
+                try {
+                    FileInputStream fileIn = new FileInputStream(account_folder + username);
+                    ObjectInputStream in = new ObjectInputStream(fileIn);
+                    current_account = (Account) in.readObject();
+                    signed_in = true;
+                    in.close();
+                    fileIn.close();
+                } catch (Exception e) {
+                    System.out.println("Login Failure.");
+                    e.printStackTrace();
+                    System.exit(-1);
+                }
                 return true;
             }
         }
@@ -129,6 +155,20 @@ public class SirenRecords {
     }
 
     public void logout(){
+
+        try {
+            FileOutputStream fileOut =
+                    new FileOutputStream(current_account.getSerial_file());
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(current_account);
+            out.close();
+            fileOut.close();
+        } catch (IOException e) {
+            System.out.println("Logout failure.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
         signed_in = false;
         current_account = null;
     }
@@ -156,7 +196,7 @@ public class SirenRecords {
     public boolean addToPlayList(Song song) { return current_account.addToPlayList(song); }
     public void removeFromPlayList(Song song) { current_account.removeFromPlayList(song); }
     public String printPlayList() {
-        if (current_account.current_list == null)
+        if (current_account.getCurrent_list() == null)
             return "None Selected.";
         return "Playlist:\n" + current_account.printPlayList();
     }

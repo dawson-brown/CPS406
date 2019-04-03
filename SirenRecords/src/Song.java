@@ -1,4 +1,4 @@
-public class Song {
+public class Song implements java.io.Serializable {
     /*
     * The name of the song
     */

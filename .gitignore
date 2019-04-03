@@ -6,3 +6,5 @@ out/
 .idea/
 SirenRecords/SirenRecords.iml
 
+# ignore login files/folders
+accounts/*

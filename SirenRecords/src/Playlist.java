@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Playlist {
+public class Playlist implements java.io.Serializable {
 
     LinkedList<Song> playlist;
 
