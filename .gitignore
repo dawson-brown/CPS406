@@ -7,4 +7,4 @@ out/
 SirenRecords/SirenRecords.iml
 
 # ignore login files/folders
-accounts/*
+accounts/
