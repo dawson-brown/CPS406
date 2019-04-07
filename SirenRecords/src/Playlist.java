@@ -1,17 +1,24 @@
 import java.util.*;
 import static org.junit.Assert.*;				
 import org.junit.Test;
-public class Playlist implements java.io.Serializable {
 
+public class Playlist implements java.io.Serializable {
+	
+	public static final long OneHOUR = (long) 3600;
+	public static final long ThreeHOUR = (long) 10800;
+	
     LinkedList<Song> playlist;
+    Long playlistLength;
     
     public Playlist(){
         playlist = new LinkedList<Song>();
+        playlistLength = (long)0;
  
     }
 
     public boolean add(Song song){
-        return this.playlist.add(song);
+    	this.playlistLength += song.getLength();
+        return this.playlist.add(song);     
     }
     
     /*
@@ -68,7 +75,15 @@ public class Playlist implements java.io.Serializable {
     	else
     		return false;
     }
-
+    
+    /*
+     * Checks to see if length of playlist is between 1 to 3 hours
+     * @return return false if not return true if successful
+     */
+    public boolean getPlaylistLength() {
+    	return (this.playlistLength >= OneHOUR && this.playlistLength <= ThreeHOUR) ? true : false;
+    }
+    
     @Override
     public String toString(){
         StringBuilder string = new StringBuilder("Playlist:\n");
@@ -100,6 +115,14 @@ public class Playlist implements java.io.Serializable {
     	list.add(song2);
     	list.delete(song2);
     	assertEquals(song, list.getRecentSong());
+    }
+    public void testGetPlaylistLength() {
+    	Playlist list = new Playlist();
+    	Song song = new Song("Test", "TestArtist", 2019, 560);
+    	Song song2 = new Song("ATest2", "TestArtist2", 2020, 570);
+    	list.add(song);
+    	list.add(song2);
+    	assertEquals(false, list.getPlaylistLength()); 	
     }
     public void testSortByName() {
     	Playlist list = new Playlist();
