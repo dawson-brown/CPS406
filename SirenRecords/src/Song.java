@@ -1,4 +1,6 @@
 import java.util.Comparator;
+import static org.junit.Assert.*;				
+import org.junit.Test;
 
 public class Song implements java.io.Serializable {
     /*
@@ -145,5 +147,32 @@ public class Song implements java.io.Serializable {
         result = 17 * result + (int)this.length;
         return result;
     }
+    
+    /*
+     * Test cases for testing Song class method
+     */
+    @Test
+    public void testSongName() {
+    	Song tester = new Song("Test", "TestArtist", 2019, 560);
+    	assertEquals("Test", tester.getName());
+    }
+    public void testSongArtist() {
+      	Song tester = new Song("Test", "TestArtist", 2019, 560);
+    	assertEquals("TestArtist", tester.getArtist());
+    }
+    public void testSongYear() {
+      	Song tester = new Song("Test", "TestArtist", 2019, 560);
+    	assertEquals(2019, tester.getYear());
+    }
+    public void testSongLength() {
+      	Song tester = new Song("Test", "TestArtist", 2019, 560);
+    	assertEquals(560, tester.getLength());
+    }
+    public void testToString() {
+    	Song tester = new Song("Test", "TestArtist", 2019, 560);
+    	assertEquals("name: " + tester.getName() + ", artist: " + tester.getArtist() + ", year: " + tester.getYear() + ", length: " + tester.getLength(), 
+    			"name: Test, artist: TestArtist, year: 2019, length: 560");
+    }
+
 
 }
