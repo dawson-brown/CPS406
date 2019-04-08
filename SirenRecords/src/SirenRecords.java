@@ -207,4 +207,8 @@ public class SirenRecords {
     }
     public boolean selectPlayList(String playlist_name) { return current_account.selectPlayList(playlist_name); }
     public Playlist currentPlayList() { return current_account.getCurrent_list(); }
+    
+    public boolean playPlayList() { return current_account.playPlayList(); }
+    public boolean addToQueue(Song song) { return current_account.addToQueue(song); }
+    public Song skipCurrentSong() { return current_account.skipCurrentSong(); }
 }
