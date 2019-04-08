@@ -10,11 +10,13 @@ public class Account implements java.io.Serializable {
     private HashMap<String, Playlist> playlists;
     transient private Playlist current_list;
     private String serial_file;
+    private Playlist current_queue; 
 
     public Account(String name) throws IOException {
         this.name = name;
         playlists = new HashMap<String, Playlist>();
         current_list = null;
+        current_queue = null; 
         serial_file = SirenRecords.account_folder + this.name;
         File account_file = new File(serial_file);
         try {
@@ -119,6 +121,38 @@ public class Account implements java.io.Serializable {
         return lists.toString();
     }
 
+    /*
+     * Send the current playlist to the song queue
+     * @return true if playlist exists and is between 1 and 3 hours, otherwise false
+     */
+    public boolean playPlayList() {	
+    	if (current_list != null && current_list.getPlaylistLength()) {
+    		current_queue = current_list;
+    		return true;
+    	}
+    	return false;	
+    }
+    /*
+     * Add song to end of queue 
+     * @param song to add
+     * @return true if queue is not empty and song is added
+     */
+    public boolean addToQueue(Song song) {
+    	if (current_queue != null){
+    		return current_queue.add(song);
+    	}
+    	return false;
+    }
+    /*
+     * Skip next song in queue
+     * @return skipped song
+     */
+    public Song skipCurrentSong() {
+    	if (current_queue != null){
+            return current_queue.playlist.removeFirst();
+        }
+    	return null;
+    }
 
 
 }
