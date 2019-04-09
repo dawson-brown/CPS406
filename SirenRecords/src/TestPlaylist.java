@@ -5,14 +5,16 @@ public class TestPlaylist {
 	   /*
      * Testers for testing each methods of our playlist object
      */
-	  @Test
-	    public void testToString() {
-	    	Playlist list = new Playlist();
-	    	Song song = new Song("Test", "TestArtist", 2019, 560);
-	    	list.add(song);
-	    	StringBuilder playlistAsString = new StringBuilder(song.toString()); 
-	    	assertEquals(playlistAsString,list.toString());
-	    }
+	 @Test
+	 public void testToString() {
+	    Playlist list = new Playlist();
+	    Song song = new Song("Test", "TestArtist", 2019, 560);
+	    list.add(song);
+	    StringBuilder playlistAsString = new StringBuilder("Playlist:\n");
+	    playlistAsString.append(song.toString());
+	    playlistAsString.append("\n");
+	    assertEquals(playlistAsString.toString(),list.toString());
+	}
     @Test
     public void testLinkedList() {
     	Playlist playlist = new Playlist();
@@ -109,5 +111,11 @@ public class TestPlaylist {
     	list.sortByLength();
     	assertEquals(sortedList.toString(),list.toString());
     }
-
+    @Test
+    public void testPlaylistIsValidByLength() {
+    	Playlist list = new Playlist();
+    	Song LongSong = new Song("A","B",2019, 4000);
+    	list.add(LongSong);
+    	assertEquals(true, list.getPlaylistLength());
+    }
 }
