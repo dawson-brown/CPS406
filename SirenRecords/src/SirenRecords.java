@@ -68,6 +68,16 @@ public class SirenRecords {
 
             try {
                 signed_in = true;
+
+                File account_file = new File(SirenRecords.account_folder + username);
+                try {
+                    account_file.createNewFile();
+                } catch (Exception e){
+                    System.out.println("Error.");
+                    e.printStackTrace();
+                    System.exit(-1);
+                }
+
                 current_account = new Account(username);
                 oFile.append(username + ":" + hash_password + "\n");
                 oFile.close();
@@ -157,7 +167,7 @@ public class SirenRecords {
 
         try {
             FileOutputStream fileOut =
-                    new FileOutputStream(current_account.getSerial_file());
+                    new FileOutputStream(SirenRecords.account_folder + current_account.getName());
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(current_account);
             out.close();
@@ -203,7 +213,7 @@ public class SirenRecords {
         if (current_account.playlistsSize()==0){
             return "None.";
         }
-        return "Playlists:\n" + current_account.printPlayLists();
+        return current_account.printPlayLists();
     }
     public boolean selectPlayList(String playlist_name) { return current_account.selectPlayList(playlist_name); }
     public Playlist currentPlayList() { return current_account.getCurrent_list(); }
