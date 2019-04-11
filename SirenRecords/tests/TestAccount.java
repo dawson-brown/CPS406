@@ -15,6 +15,7 @@ public class TestAccount {
 	private Song song1;
 	private Song song2;
 	private Song song3;
+	private Song longSong;
 @Before
 public void setUp() throws IOException {
 	tester = new Account("Test");
@@ -24,6 +25,7 @@ public void setUp() throws IOException {
 	song1 = new Song("First", "Song", 0, 0);
 	song2 = new Song("Second", "Song", 0, 0);
 	song3 = new Song("Third", "Song", 0, 0);
+	longSong = new Song("A", "B", 2019, 4000);
 }
 @Test
 public void testAddPlaylist() {
@@ -50,4 +52,29 @@ public void testRemoveSongFromPlaylist() {
 public void testGetAccountCurrentPlaylistName() {
 	assertEquals("test3", tester.getPlayListName("Testtest3"));
 }
+@Test
+public void testAddPlaylistToQueue() {
+        tester.addPlaylist("QueueTest");
+        tester.addToPlayList(song1);
+        assertEquals(false, tester.playPlayList());
+        tester.addToPlayList(longSong);
+        assertEquals(true, tester.playPlayList());
+}
+@Test
+public void testAddSongToQueue() {
+        tester.addPlaylist("QueueSongAddTest");
+        tester.addToPlayList(longSong);
+        tester.playPlayList();
+        assertEquals(true, tester.addToQueue(song2));
+}
+@Test
+public void testSkipSongInQueue() {
+        tester.addPlaylist("QueueSkipTest");
+        tester.addToPlayList(longSong);
+        tester.addToPlayList(song1);
+        tester.addToPlayList(song2);
+        tester.playPlayList();
+        assertEquals(longSong, tester.skipCurrentSong());
+        assertEquals(song1, tester.skipCurrentSong());
+}	
 }
