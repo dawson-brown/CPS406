@@ -55,8 +55,6 @@ public void testGetAccountCurrentPlaylistName() {
 @Test
 public void testAddPlaylistToQueue() {
         tester.addPlaylist("QueueTest");
-        tester.addToPlayList(song1);
-        assertEquals(false, tester.playPlayList());
         tester.addToPlayList(longSong);
         assertEquals(true, tester.playPlayList());
 }
